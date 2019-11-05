@@ -2,7 +2,9 @@ import React from 'react';
 import FormInput from '../form-input/form-input.component';
 import CustomButton from '../custom-button/custom-button.component';
 
-import {signInWithGoogle} from '../../firebase/firebase.utils';
+//importamos auth y signInWithGoogle porque el signin lo hacemos con la función
+//auth.signInWithEmailAndPassword y con signInWithGoogle. Si queremos más cosas hay que añadirlas.
+import {auth, signInWithGoogle} from '../../firebase/firebase.utils';
 
 import './sign-in.styles.scss';
 
@@ -16,10 +18,26 @@ class SignIn extends React.Component {
         }
 }
 
-handleSubmit = event => {
+handleSubmit = async event => {
     event.preventDefault();
-    //esto devuelve el valor nulo a los campos email y password
-    this.setState({email: '', password: ''})
+
+    const {email, password} = this.state;
+
+    try {
+         await auth.signInWithEmailAndPassword(email, password);
+
+         //esto devuelve el valor nulo a los campos email y password si funciona el signIn
+     this.setState({email: '', password: ''})
+
+    } catch (error) {
+        error.code='auth/user-not-found'?
+
+        console.log('usuario no encontrado')
+        :
+        console.log(error);
+
+    }
+    
 }
 
 handleChange = event => {
